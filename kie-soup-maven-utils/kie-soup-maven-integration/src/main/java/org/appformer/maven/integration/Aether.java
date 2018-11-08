@@ -53,6 +53,9 @@ import static org.appformer.maven.integration.embedder.MavenProjectLoader.loadMa
 public class Aether {
 
     private static final Logger log = LoggerFactory.getLogger( Aether.class );
+    
+    private static final String FORCE_OFFLINE = "kie.maven.offline.force";   
+    private static final boolean IS_FORCE_OFFLINE = Boolean.valueOf(System.getProperty(FORCE_OFFLINE, "false"));  
 
     private String localRepoDir;
     private final boolean offline;
@@ -87,11 +90,13 @@ public class Aether {
 
     private Collection<RemoteRepository> initRepositories( MavenProject mavenProject ) {
         Collection<RemoteRepository> reps = new HashSet<RemoteRepository>();
+        
+   if (!IS_FORCE_OFFLINE) { 
         reps.add( newCentralRepository() );
         if ( mavenProject != null ) {
             reps.addAll( mavenProject.getRemoteProjectRepositories() );
         }
-
+    }
         RemoteRepository localRepo = newLocalRepository();
         if ( localRepo != null ) {
             localRepository = localRepo;
